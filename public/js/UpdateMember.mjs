@@ -165,9 +165,10 @@ const onLoadAsync = async () =>
     // Clear the member list, we use this function for reloading as well.
     memberListElement.innerText = "";
 
-    const createCenteredHeading = (text) =>
+    const createCenteredHeadingForError = (text) =>
     {
         const headingElement = document.createElement("h2");
+        headingElement.id = ElementCollection.MEMBER_LIST_ERROR_HEADING_ID;
         headingElement.classList.add("text-center", "p-5");
         headingElement.innerText = text;
         return headingElement;
@@ -175,7 +176,7 @@ const onLoadAsync = async () =>
 
     if (!isOk)
     {
-        memberListElement.appendChild(createCenteredHeading("Failed to fetch members!"));
+        memberListElement.appendChild(createCenteredHeadingForError("Failed to fetch members!"));
         return;
     }
 
@@ -186,7 +187,7 @@ const onLoadAsync = async () =>
 
     if (members.length === 0)
     {
-        memberListElement.appendChild(createCenteredHeading("No members found!"));
+        memberListElement.appendChild(createCenteredHeadingForError("No members found!"));
         return;
     }
 
@@ -248,7 +249,7 @@ const onLoadAsync = async () =>
         if (member.gymPrograms.length !== 0)
         {
             const gymProgramsTitleElement = document.createElement("h5");
-            gymProgramsTitleElement.classList.add("card-title");
+            gymProgramsTitleElement.classList.add("card-title", ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME);
             gymProgramsTitleElement.innerText = "Gym Programs";
             cardBodyElement.appendChild(gymProgramsTitleElement);
 

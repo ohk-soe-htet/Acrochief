@@ -28,6 +28,10 @@ export class ElementCollection
 
     static MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID = "update-member-submit-button";
 
+    static GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME = "gym-programs-field-title-member-list-class";
+
+    static MEMBER_LIST_ERROR_HEADING_ID = "member-list-error-heading";
+
     static getMemberCreateButton()
     {
         return document.getElementById(ElementCollection.MEMBER_CREATE_BUTTON_ID);
@@ -41,6 +45,11 @@ export class ElementCollection
     static getMemberListContainer()
     {
         return document.getElementById(ElementCollection.MEMBER_LIST_CONTAINER_ID);
+    }
+
+    static getMemberListContainerCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_LIST_CONTAINER_ID}`);
     }
 
     static getMemberCreateModal()
@@ -109,5 +118,15 @@ export class ElementCollection
     static getMemberUpdateModalSubmitButtonCypress()
     {
         return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID}`);
+    }
+
+    static getFirstGymProgramsTitleElementCypress()
+    {
+        return cy.get(`.${ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME}`).first();
+    }
+
+    static getMemberListErrorHeadingCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_LIST_ERROR_HEADING_ID}`);
     }
 }

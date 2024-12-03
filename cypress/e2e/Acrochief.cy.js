@@ -1,5 +1,5 @@
 import { ElementCollection } from "../../public/js/ElementCollection.mjs";
-import { runAsyncTest } from "../helpers/TestHelpers.mjs";
+import { runTestAsync } from "../helpers/TestHelpers.mjs";
 import { Endpoints } from "../../public/js/Endpoints.mjs";
 
 let setBaseURLPromise;
@@ -33,12 +33,15 @@ describe("AcroChief", () =>
         .should("have.css", "opacity", "1");
   }
 
-  const showModal = async () =>
+  const visitPageAsync = async () =>
   {
     await setBaseURLPromise;
 
     cy.visit(`${baseUrl}/pages/ManageMembers.html`);
+  }
 
+  const showModal = () =>
+  {
     assertModalVisible(true, () =>
     {
       // Get first button with "Edit" as its text
@@ -79,16 +82,33 @@ describe("AcroChief", () =>
     assertModalVisible(false, submitUpdateModal);
   }
 
+  /**
+   * @param { boolean } exists
+   */
+  const assertGymProgramsFieldExistInMemberList = (exists) =>
+  {
+    ElementCollection.getMemberListContainerCypress(0)
+        .contains(`#${ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME}`)
+        .should(exists ? "exist" : "not.exist");
+  }
+
   it("ManageMembers - Clicking on \"Edit\" button in the member list should cause edit member modal to pop-up.", () =>
   {
-    runAsyncTest(showModal);
+    runTestAsync(async () =>
+    {
+      await visitPageAsync();
+
+      showModal();
+    });
   });
 
   it("ManageMembers - Inputting and submitting with valid member name works", () =>
   {
-    runAsyncTest(async () =>
+    runTestAsync(async () =>
     {
-      await showModal();
+      await visitPageAsync();
+
+      showModal();
 
       const UPDATED_NAME = "Updated Name";
 
@@ -102,11 +122,13 @@ describe("AcroChief", () =>
     });
   });
 
-  it("ManageMembers - Inputting and submitting with valid member admin number works", () =>
+  it(`ManageMembers - Inputting and submitting with valid member admin number should result in successful submission`, () =>
   {
-    runAsyncTest(async () =>
+    runTestAsync(async () =>
     {
-      await showModal();
+      await visitPageAsync();
+
+      showModal();
 
       const UPDATED_ADMIN_NUMBER = "2222222I";
 
@@ -124,23 +146,55 @@ describe("AcroChief", () =>
   Inputting and submitting with blank gym programs should result in the gym program field being removed 
   from the particular member in the member list`, () =>
   {
-    runAsyncTest(async () =>
+    runTestAsync(async () =>
     {
-      await showModal();
+      await visitPageAsync();
+
+      showModal();
 
       ElementCollection
           .getMemberUpdateModalGymProgramsFieldCypress()
           .clear();
 
       submitUpdateModalAndEnsureSuccess();
+
+      assertGymProgramsFieldExistInMemberList(false);
     });
   });
 
-  it("ManageMembers - Inputting and submitting with valid member name, admin number and gym programs work", () =>
+  it(`ManageMembers - 
+  Inputting and submitting with blank gym programs should result in the gym program field being removed 
+  from the particular member in the member list`, () =>
   {
-    runAsyncTest(async () =>
+    runTestAsync(async () =>
     {
-      await showModal();
+      await visitPageAsync();
+
+      showModal();
+
+      ElementCollection
+          .getMemberUpdateModalGymProgramsFieldCypress()
+          .clear()
+          .type("Yannis");
+
+      // Wait for request to complete, since UI will be updated by then
+      cy.intercept("PUT", `${Endpoints.MEMBER_UPDATE_ENDPOINT}/*`).as("updateMember");
+
+      submitUpdateModalAndEnsureSuccess();
+
+      cy.wait("@updateMember");
+
+      assertGymProgramsFieldExistInMemberList(false);
+    });
+  });
+
+  it("ManageMembers - Inputting and submitting with valid member name, admin number and gym programs should work", () =>
+  {
+    runTestAsync(async () =>
+    {
+      await visitPageAsync();
+
+      showModal();
 
       const UPDATED_NAME = "Updated Name II";
       const UPDATED_ADMIN_NUMBER = "3333333I";
@@ -162,6 +216,57 @@ describe("AcroChief", () =>
           .clear();
 
       submitUpdateModalAndEnsureSuccess();
+    });
+  });
+
+  it("ManageMembers - Invalid response on GET should result in error message being displayed in place of member list", () =>
+  {
+    runTestAsync(async () =>
+    {
+      cy.intercept("GET", `${Endpoints.MEMBER_GET_ENDPOINT}`,
+      {
+        statusCode: 500
+      });
+
+      await visitPageAsync();
+
+      ElementCollection
+          .getMemberListErrorHeadingCypress()
+          .should("have.text", "Failed to fetch members!");
+    });
+  });
+
+  it("ManageMembers - Invalid response on GET members should result in error message being displayed in place of member list", () =>
+  {
+    runTestAsync(async () =>
+    {
+      cy.intercept("GET", `${Endpoints.MEMBER_GET_ENDPOINT}`,
+      {
+        members: []
+      });
+
+      await visitPageAsync();
+
+      ElementCollection
+          .getMemberListErrorHeadingCypress()
+          .should("have.text", "No members found!");
+    });
+  });
+
+  it(`ManageMembers - Should there be 0 registered members, there should be a "No members found!" message displayed`, () =>
+  {
+    runTestAsync(async () =>
+    {
+      cy.intercept("GET", `${Endpoints.MEMBER_GET_ENDPOINT}`,
+      {
+        members: []
+      });
+
+      await visitPageAsync();
+
+      ElementCollection
+          .getMemberListErrorHeadingCypress()
+          .should("have.text", "No members found!");
     });
   });
 });

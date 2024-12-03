@@ -1,4 +1,4 @@
-export const runAsyncTest = (asyncTest) =>
+export const runTestAsync = (asyncTest) =>
 {
     cy.wrap(null).then(asyncTest);
 }
