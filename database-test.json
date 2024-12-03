@@ -1,0 +1,34 @@
+{
+    "members": {
+        "dataType": "Map",
+        "value": [
+            [
+                "7262415212832166912",
+                {
+                    "id": "7262415212832166912",
+                    "name": "TrumpMcDonaldz",
+                    "adminNumber": "2305387I",
+                    "gymProgramIDs": []
+                }
+            ]
+        ]
+    },
+    "programs": {
+        "dataType": "Map",
+        "value": [
+            [
+                "7262415322701960192",
+                {
+                    "id": "7262415322701960192",
+                    "name": "yannis",
+                    "focusBodyPart": "upper",
+                    "intensity": "mild",
+                    "difficulty": "beginner",
+                    "targetAudience": "teenagers",
+                    "reps": 6,
+                    "isActive": true
+                }
+            ]
+        ]
+    }
+}
