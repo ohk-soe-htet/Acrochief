@@ -6,6 +6,7 @@ import { KILL_ROUTER } from "./utils/routes/KillRoutes.mjs";
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import cors from "cors";
+import { DATABASE_ROUTER } from "./utils/routes/DatabaseRoutes.mjs";
 
 export let app = express();
 
@@ -35,6 +36,8 @@ ROUTER.use("/members", MEMBERS_ROUTER);
 ROUTER.use("/gym-programs", GYM_PROGRAMS_ROUTER);
 // Used for killing the server
 ROUTER.use("/kill", KILL_ROUTER);
+// For database related operations
+ROUTER.use("/database", DATABASE_ROUTER);
 
 app.get("/", (req, res) =>
 {

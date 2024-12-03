@@ -12,4 +12,7 @@ export class Endpoints
     static GYM_PROGRAM_GET_ENDPOINT = Endpoints.GYM_PROGRAM_ENDPOINT;
     static GYM_PROGRAM_CREATE_ENDPOINT = `${Endpoints.GYM_PROGRAM_ENDPOINT}/create`;
     static GYM_PROGRAM_UPDATE_ENDPOINT = `${Endpoints.GYM_PROGRAM_ENDPOINT}/update`;
+
+    static DATABASE_ENDPOINT = `${Endpoints.API_ENDPOINT}/database`;
+    static DATABASE_RESET_ENDPOINT = `${Endpoints.DATABASE_ENDPOINT}/reset`;
 }

@@ -28,6 +28,50 @@ export class JSONDatabase
     }
 
     /**
+     * @returns { JSONDatabase }
+     * @private
+     */
+    static transformDatabase = (database) =>
+    {
+        database = plainToClass(JSONDatabase, database);
+
+        // Members is currently in the form of Map<string, Map>
+        // See: https://github.com/typestack/class-transformer/issues/288
+        let members = database.members;
+
+        for (let [key, value] of members)
+        {
+            let rawData = Object.fromEntries(value.entries());
+
+            // Apparently plainToClass() doesn't work if you have a non-paramless ctor.
+            // Stupid but it is what it is.
+            // See: https://github.com/typestack/class-transformer/issues/132
+
+            // Construct MemberDTO instance, bypassing ctor.
+            let member = Reflect.construct(Object, [], MemberEntity);
+
+            member = plainToClassFromExist(member, rawData);
+
+            members.set(key, member);
+        }
+
+        let programs = database.programs;
+
+        for (let [key, value] of programs)
+        {
+            let rawData = Object.fromEntries(value.entries());
+
+            let program = Reflect.construct(Object, [], GymProgramEntity);
+
+            program = plainToClassFromExist(program, rawData);
+
+            programs.set(key, program);
+        }
+
+        return database;
+    }
+
+    /**
      * @returns { Promise<JSONDatabase> }
      * @private
      */
@@ -42,40 +86,7 @@ export class JSONDatabase
 
         if (database !== null)
         {
-            database = plainToClass(JSONDatabase, database);
-
-            // Members is currently in the form of Map<string, Map>
-            // See: https://github.com/typestack/class-transformer/issues/288
-            let members = database.members;
-
-            for (let [key, value] of members)
-            {
-                let rawData = Object.fromEntries(value.entries());
-
-                // Apparently plainToClass() doesn't work if you have a non-paramless ctor.
-                // Stupid but it is what it is.
-                // See: https://github.com/typestack/class-transformer/issues/132
-
-                // Construct MemberDTO instance, bypassing ctor.
-                let member = Reflect.construct(Object, [], MemberEntity);
-
-                member = plainToClassFromExist(member, rawData);
-
-                members.set(key, member);
-            }
-
-            let programs = database.programs;
-
-            for (let [key, value] of programs)
-            {
-                let rawData = Object.fromEntries(value.entries());
-
-                let program = Reflect.construct(Object, [], GymProgramEntity);
-
-                program = plainToClassFromExist(program, rawData);
-
-                programs.set(key, program);
-            }
+            database = this.transformDatabase(database);
         }
 
         else
@@ -85,6 +96,30 @@ export class JSONDatabase
         }
 
         return database;
+    }
+
+    /**
+     * @returns { Promise<JSONDatabase> }
+     * @public
+     */
+    static loadFromJSON = async (databasePath) =>
+    {
+        /**
+         * @type { JSONDatabase }
+         */
+        let database = await tryReadJSONAsync(databasePath);
+
+        if (database !== null)
+        {
+            database = this.transformDatabase(database);
+        }
+
+        else
+        {
+            throw new Error(`Failed to load database from ${databasePath}`);
+        }
+
+        return DB_INSTANCE = database;
     }
 
     /**
@@ -167,4 +202,4 @@ export class JSONDatabase
     }
 }
 
-export const DB_INSTANCE = await JSONDatabase.getOrCreateDatabaseAsync();
+export let DB_INSTANCE = await JSONDatabase.getOrCreateDatabaseAsync();

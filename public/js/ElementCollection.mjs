@@ -78,9 +78,12 @@ export class ElementCollection
         return document.getElementById(ElementCollection.MEMBER_CREATE_MODAL_MESSAGE_ID);
     }
 
-    static getMemberUpdateModalCypress()
+    /**
+     * @param { number | undefined } timeout
+     */
+    static getMemberUpdateModalCypress(timeout = undefined)
     {
-        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_ID}`);
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_ID}`, timeout === undefined ? {} : { timeout });
     }
 
     static getMemberUpdateModalNameFieldCypress()

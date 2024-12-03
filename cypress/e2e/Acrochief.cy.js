@@ -1,5 +1,6 @@
 import { ElementCollection } from "../../public/js/ElementCollection.mjs";
 import { runAsyncTest } from "../helpers/TestHelpers.mjs";
+import { Endpoints } from "../../public/js/Endpoints.mjs";
 
 let setBaseURLPromise;
 
@@ -18,7 +19,19 @@ describe("AcroChief", () =>
 
       setBaseURLPromise();
     });
+
+    // Reset the database so that we have a known set of members and gym programs
+    cy.request("PUT", Endpoints.DATABASE_RESET_ENDPOINT);
   });
+
+  // This is paramount, as inputting while the modal is playing its opening animation
+  // may cause the input to be interrupted when the animation completes.
+  const waitForModalOpenAnimation = () =>
+  {
+    ElementCollection.getMemberUpdateModalCypress()
+        // Wait for modal animation to complete ( https://imgur.com/a/vSxoCKY )
+        .should("have.css", "opacity", "1");
+  }
 
   const showModal = async () =>
   {
@@ -26,14 +39,13 @@ describe("AcroChief", () =>
 
     cy.visit(`${baseUrl}/pages/ManageMembers.html`);
 
-    // Get first button with "Edit" as its text
-    cy.get("button").contains("Edit").click();
+    assertModalVisible(true, () =>
+    {
+      // Get first button with "Edit" as its text
+      cy.get("button").contains("Edit").click();
 
-    // Apparently, reordering this before the statements above causes the type() to be incomplete
-    ElementCollection.getMemberUpdateModalCypress()
-        .should("be.visible")
-        // Wait for modal animation to complete ( https://imgur.com/a/vSxoCKY )
-        .should("have.css", "opacity", "1");
+      waitForModalOpenAnimation();
+    });
   }
 
   const submitUpdateModal = () =>
@@ -41,6 +53,30 @@ describe("AcroChief", () =>
     ElementCollection
         .getMemberUpdateModalSubmitButtonCypress()
         .click();
+  }
+
+  /**
+   * @param { boolean } isVisible
+   * @param { function() } transitionAction
+   */
+  const assertModalVisible = (isVisible, transitionAction) =>
+  {
+    const getChainer = (isVisible) => isVisible ? "be.visible" : "not.be.visible";
+
+    ElementCollection
+        .getMemberUpdateModalCypress()
+        .should(getChainer(!isVisible));
+
+    transitionAction();
+
+    ElementCollection
+        .getMemberUpdateModalCypress()
+        .should(getChainer(isVisible));
+  }
+
+  const submitUpdateModalAndEnsureSuccess = () =>
+  {
+    assertModalVisible(false, submitUpdateModal);
   }
 
   it("ManageMembers - Clicking on \"Edit\" button in the member list should cause edit member modal to pop-up.", () =>
@@ -62,9 +98,7 @@ describe("AcroChief", () =>
           .type(UPDATED_NAME)
           .should('have.value', UPDATED_NAME);
 
-      ElementCollection
-          .getMemberUpdateModalSubmitButtonCypress()
-          .click();
+      submitUpdateModalAndEnsureSuccess();
     });
   });
 
@@ -82,7 +116,7 @@ describe("AcroChief", () =>
           .type(UPDATED_ADMIN_NUMBER)
           .should('have.value', UPDATED_ADMIN_NUMBER);
 
-      submitUpdateModal();
+      submitUpdateModalAndEnsureSuccess();
     });
   });
 
@@ -98,7 +132,7 @@ describe("AcroChief", () =>
           .getMemberUpdateModalGymProgramsFieldCypress()
           .clear();
 
-      submitUpdateModal();
+      submitUpdateModalAndEnsureSuccess();
     });
   });
 
@@ -108,8 +142,8 @@ describe("AcroChief", () =>
     {
       await showModal();
 
-      const UPDATED_NAME = "Updated Name";
-      const UPDATED_ADMIN_NUMBER = "2222222I";
+      const UPDATED_NAME = "Updated Name II";
+      const UPDATED_ADMIN_NUMBER = "3333333I";
 
       ElementCollection
           .getMemberUpdateModalNameFieldCypress()
@@ -127,7 +161,7 @@ describe("AcroChief", () =>
           .getMemberUpdateModalGymProgramsFieldCypress()
           .clear();
 
-      submitUpdateModal();
+      submitUpdateModalAndEnsureSuccess();
     });
   });
 });
