@@ -129,11 +129,11 @@ class UpdateModal extends Modal
 }
 
 const updateMemberModal = new UpdateModal();
-updateMemberModal.modalElement.id = "update-member-modal";
-updateMemberModal.nameInputElement.id = "update-member-name";
-updateMemberModal.adminNumberInputElement.id = "update-member-admin-number";
-updateMemberModal.gymProgramsInputElement.id = "update-member-gym-programs";
-updateMemberModal.actionButtonElement.id = "update-member-button";
+updateMemberModal.modalElement.id = ElementCollection.MEMBER_UDPATE_MODAL_ID;
+updateMemberModal.nameInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_NAME_FIELD_ID;
+updateMemberModal.adminNumberInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_ADMIN_NUMBER_FIELD_ID;
+updateMemberModal.gymProgramsInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_GYM_PROGRAMS_FIELD_ID;
+updateMemberModal.actionButtonElement.id = ElementCollection.MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID;
 
 const onLoadAsync = async () =>
 {

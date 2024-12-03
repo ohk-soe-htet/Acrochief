@@ -16,6 +16,18 @@ export class ElementCollection
 
     static MEMBER_LIST_CONTAINER_ID = "member-list-container";
 
+    static MEMBER_UDPATE_MODAL_ID = "member-update-modal";
+
+    static MEMBER_UDPATE_MODAL_NAME_FIELD_ID = "update-member-name";
+
+    static MEMBER_UDPATE_MODAL_ADMIN_NUMBER_FIELD_ID = "update-member-admin-number";
+
+    static MEMBER_UDPATE_MODAL_GYM_PROGRAMS_FIELD_ID = "update-member-gym-programs";
+
+    static MEMBER_UDPATE_MODAL_MESSAGE_ID = "update-member-message";
+
+    static MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID = "update-member-submit-button";
+
     static getMemberCreateButton()
     {
         return document.getElementById(ElementCollection.MEMBER_CREATE_BUTTON_ID);
@@ -65,7 +77,34 @@ export class ElementCollection
     {
         return document.getElementById(ElementCollection.MEMBER_CREATE_MODAL_MESSAGE_ID);
     }
-}
 
-// // Do not reorder this, otherwise it will result in "Uncaught ReferenceError: Cannot access 'ElementCollection' before initialization"
-// window.ElementCollection = ElementCollection;
+    static getMemberUpdateModalCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_ID}`);
+    }
+
+    static getMemberUpdateModalNameFieldCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_NAME_FIELD_ID}`);
+    }
+
+    static getMemberUpdateModalAdminNumberFieldCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_ADMIN_NUMBER_FIELD_ID}`);
+    }
+
+    static getMemberUpdateModalGymProgramsFieldCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_GYM_PROGRAMS_FIELD_ID}`);
+    }
+
+    static getMemberUpdateModalMessageCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_MESSAGE_ID}`);
+    }
+
+    static getMemberUpdateModalSubmitButtonCypress()
+    {
+        return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID}`);
+    }
+}

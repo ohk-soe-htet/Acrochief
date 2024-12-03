@@ -77,7 +77,6 @@ export class Modal
         modalElement.className = "modal fade";
         modalElement.setAttribute("tabindex", "-1");
         modalElement.setAttribute("role", "dialog");
-        modalElement.setAttribute("aria-labelledby", "member-update-modal-label");
         modalElement.setAttribute("aria-hidden", "true");
 
         const modalDialogElement = document.createElement("div");

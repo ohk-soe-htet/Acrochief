@@ -2,7 +2,7 @@ import { ElementCollection } from "../../public/js/ElementCollection.mjs";
 
 let setBaseURLPromise;
 
-describe('Resource Management Frontend', () => {
+describe("AcroChief", () => {
   let baseUrl;
 
   before(() =>
@@ -17,81 +17,73 @@ describe('Resource Management Frontend', () => {
     //   catch(err) { }
     // }
 
-    cy.task('startServer').then((url) =>
+    cy.task("startServer").then((url) =>
     {
       setBaseURLPromise = async () =>
       {
         baseUrl = url;
-
       };
 
       setBaseURLPromise();
     });
   });
 
-  // after(() =>
-  // {
-  //   cy.task('coverageReport');
-  // });
-
   after(() =>
   {
-    return cy.task('stopServer'); // Stop the server after the report is done
+    return cy.task("stopServer"); // Stop the server after the report is done
+
+    // const shutdownServer = async () =>
+    // {
+    //   try
+    //   {
+    //     await fetch('http://localhost:5050/api/kill', { method: 'GET' });
+    //   }
+    //
+    //   catch(err) { }
+    // }
+    //
+    // shutdownServer();
   });
 
-  // it('Blank', () =>
-  // {
-  //
-  // });
-
-  // it('ManageMembers - Clicking on "Create Member" button should cause member creation modal to pop-up.', () => {
-  //   const body = async () =>
-  //   {
-  //     await setBaseURLPromise;
-  //
-  //     cy.visit(`${baseUrl}/pages/ManageMembers.html`);
-  //
-  //     // const delay = ms => new Promise(res => setTimeout(res, ms));
-  //     //
-  //     // await delay(3000);
-  //
-  //     ElementCollection.getMemberCreateButtonCypress().click();
-  //
-  //     const memberCreateModal = ElementCollection.getMemberCreateModalCypress();
-  //
-  //     memberCreateModal.should('be.visible');
-  //   }
-  //
-  //   cy.wrap(null).then(body);
-  // });
-
-  it('Z', () => {
+  it('ManageMembers - Clicking on "Edit" button in the member list should cause edit member modal to pop-up.', () =>
+  {
     const body = async () =>
     {
       await setBaseURLPromise;
 
       cy.visit(`${baseUrl}/pages/ManageMembers.html`);
 
-      // cy.get("#edit").click();
-
       // Get first button with "Edit" as its text
       cy.get("button").contains("Edit").click();
 
-      // const delay = ms => new Promise(res => setTimeout(res, ms));
-      //
-      // await delay(3000);
+      // Apparently, reordering this before the statements above causes the type() to be incomplete
+      ElementCollection.getMemberUpdateModalCypress()
+          .should("be.visible")
+          // Wait for modal animation to complete ( https://imgur.com/a/vSxoCKY )
+          .should("have.css", "opacity", "1");
 
-      // Update fields
+      const UPDATED_NAME = "Updated Name";
+      const UPDATED_ADMIN_NUMBER = "2222222I";
 
-      // updateMemberModal.nameInputElement.id = "update-member-name";
-      // updateMemberModal.adminNumberInputElement.id = "update-member-admin-number";
-      // updateMemberModal.gymPrograms.inputElement.id = "update-member-gym-programs";
+      ElementCollection
+          .getMemberUpdateModalNameFieldCypress()
+          .clear()
+          .type(UPDATED_NAME)
+          .should('have.value', UPDATED_NAME);
 
-      cy.get("#update-member-name").clear().type("Updated Name");
-      cy.get("#update-member-admin-number").clear().type("1111111I");
-      cy.get("#update-member-gym-programs").clear();
+      ElementCollection
+          .getMemberUpdateModalAdminNumberFieldCypress()
+          .clear()
+          .type(UPDATED_ADMIN_NUMBER)
+          .should('have.value', UPDATED_ADMIN_NUMBER);
 
-      cy.get("#update-member-button").click();
+      ElementCollection
+          .getMemberUpdateModalGymProgramsFieldCypress()
+          .clear();
+
+      ElementCollection
+          .getMemberUpdateModalSubmitButtonCypress()
+          .click();
     }
 
     cy.wrap(null).then(body);
