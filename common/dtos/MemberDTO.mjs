@@ -13,8 +13,8 @@ export const MemberDTOSchema = z.object(
         .min(1)
         .max(50)
         .refine(
-            name => name.split(' ').every(word => isAlpha(word)),
-            { message: "Name must only contain letters!" }
+            name => name.split(' ').every(word => isAlpha(word) || word.length === 0),
+            { message: "Name must only contain letters and spaces!" }
         ),
 
     adminNumber: z
