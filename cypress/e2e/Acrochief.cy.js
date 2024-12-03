@@ -1,4 +1,5 @@
 import { ElementCollection } from "../../public/js/ElementCollection.mjs";
+import { runAsyncTest } from "../helpers/TestHelpers.mjs";
 
 let setBaseURLPromise;
 
@@ -42,14 +43,14 @@ describe("AcroChief", () =>
         .click();
   }
 
-  it('ManageMembers - Clicking on "Edit" button in the member list should cause edit member modal to pop-up.', () =>
+  it("ManageMembers - Clicking on \"Edit\" button in the member list should cause edit member modal to pop-up.", () =>
   {
-    cy.wrap(null).then(showModal);
+    runAsyncTest(showModal);
   });
 
-  it('ManageMembers - Inputting and submitting with valid member name works', () =>
+  it("ManageMembers - Inputting and submitting with valid member name works", () =>
   {
-    const body = async () =>
+    runAsyncTest(async () =>
     {
       await showModal();
 
@@ -64,14 +65,12 @@ describe("AcroChief", () =>
       ElementCollection
           .getMemberUpdateModalSubmitButtonCypress()
           .click();
-    }
-
-    cy.wrap(null).then(body);
+    });
   });
 
-  it('ManageMembers - Inputting and submitting with valid member name works', () =>
+  it("ManageMembers - Inputting and submitting with valid member admin number works", () =>
   {
-    const body = async () =>
+    runAsyncTest(async () =>
     {
       await showModal();
 
@@ -84,14 +83,14 @@ describe("AcroChief", () =>
           .should('have.value', UPDATED_ADMIN_NUMBER);
 
       submitUpdateModal();
-    }
-
-    cy.wrap(null).then(body);
+    });
   });
 
-  it('ManageMembers - Inputting and submitting with valid member name works', () =>
+  it(`ManageMembers - 
+  Inputting and submitting with blank gym programs should result in the gym program field being removed 
+  from the particular member in the member list`, () =>
   {
-    const body = async () =>
+    runAsyncTest(async () =>
     {
       await showModal();
 
@@ -100,14 +99,12 @@ describe("AcroChief", () =>
           .clear();
 
       submitUpdateModal();
-    }
-
-    cy.wrap(null).then(body);
+    });
   });
 
-  it('ManageMembers - Inputting and submitting with valid member name, admin number and gym programs work', () =>
+  it("ManageMembers - Inputting and submitting with valid member name, admin number and gym programs work", () =>
   {
-    const body = async () =>
+    runAsyncTest(async () =>
     {
       await showModal();
 
@@ -131,8 +128,6 @@ describe("AcroChief", () =>
           .clear();
 
       submitUpdateModal();
-    }
-
-    cy.wrap(null).then(body);
+    });
   });
 });
