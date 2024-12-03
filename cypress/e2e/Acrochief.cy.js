@@ -20,6 +20,14 @@ describe("AcroChief", () =>
         .should("have.css", "opacity", "1");
   }
 
+  // Same as above, extremely important.
+  const waitForModalCloseAnimation = () =>
+  {
+    ElementCollection.getMemberUpdateModalCypress()
+        // Wait for modal animation to complete ( https://imgur.com/a/vSxoCKY )
+        .should("have.css", "opacity", "0");
+  }
+
   const showModal = () =>
   {
     assertModalTransitionToVisible(true, () =>
@@ -80,6 +88,8 @@ describe("AcroChief", () =>
     cy.intercept("PUT", `${Endpoints.MEMBER_UPDATE_ENDPOINT}/*`).as("updateMember");
 
     assertModalTransitionToVisible(false, submitUpdateModal);
+
+    waitForModalCloseAnimation();
 
     cy.wait("@updateMember");
   }
@@ -248,8 +258,40 @@ describe("AcroChief", () =>
 
     ElementCollection
         .getMemberUpdateModalMessageCypress()
-        .should("have.text", "[ name ] Name must only contain letters!");
+        .should("have.text", "[ name ] Name must only contain letters and spaces!");
   });
+
+  it("ManageMembers - Inputting and submitting blank or whitespace-only member name will result in a form error", () =>
+  {
+    visitPage();
+
+    showModal();
+
+    ElementCollection
+        .getMemberUpdateModalNameFieldCypress()
+        .clear();
+
+    const validate = () =>
+    {
+      assertModalVisible(true, submitUpdateModal);
+
+      ElementCollection
+          .getMemberUpdateModalMessageCypress()
+          .should("have.text", "[ name ] String must contain at least 1 character(s)");
+    };
+
+    validate();
+
+    const WHITESPACE = ' ';
+
+    ElementCollection
+        .getMemberUpdateModalNameFieldCypress()
+        .type(WHITESPACE)
+        .should("have.value", WHITESPACE);
+
+    validate();
+  });
+
 
   it("ManageMembers - Invalid response on GET should result in error message being displayed in place of member list", () =>
   {
