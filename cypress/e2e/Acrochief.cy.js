@@ -59,17 +59,34 @@ describe("AcroChief", () =>
 
   const submitUpdateModalAndEnsureSuccess = () =>
   {
+    // Wait for request to complete, since UI will be updated by then
+    cy.intercept("PUT", `${Endpoints.MEMBER_UPDATE_ENDPOINT}/*`).as("updateMember");
+
     assertModalVisible(false, submitUpdateModal);
+
+    cy.wait("@updateMember");
   }
 
   /**
    * @param { boolean } exists
+   * @param { string } expectedGymProgramName
    */
-  const assertGymProgramsFieldExistInMemberList = (exists) =>
+  const assertGymProgramsFieldExistInMemberList = (exists, expectedGymProgramName = undefined) =>
   {
-    ElementCollection.getMemberListContainerCypress(0)
-        .contains(`#${ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME}`)
+    ElementCollection
+        .getGymProgramsTitleElementCypressFilter()
         .should(exists ? "exist" : "not.exist");
+
+    if (exists)
+    {
+      ElementCollection
+          .getGymProgramsTitleElementCypressFilter()
+          .first()
+          // They're siblings, so we see if its parent contains the expected gym program name
+          // See: https://imgur.com/a/1rKfX9f
+          .parent()
+          .contains("ul", expectedGymProgramName.toLowerCase());
+    }
   }
 
   let baseUrl;
@@ -156,8 +173,7 @@ describe("AcroChief", () =>
     assertGymProgramsFieldExistInMemberList(false);
   });
 
-
-  it(`ManageMembers - 
+  it(`ManageMembers -
   Inputting and submitting with filled in gym program field should result in the gym program field being displayed
   for the particular member in the member list`, () =>
   {
@@ -165,19 +181,16 @@ describe("AcroChief", () =>
 
     showModal();
 
+    const GYM_PROGRAM_NAME = "Yannis";
+
     ElementCollection
         .getMemberUpdateModalGymProgramsFieldCypress()
         .clear()
-        .type("Yannis");
-
-    // Wait for request to complete, since UI will be updated by then
-    cy.intercept("PUT", `${Endpoints.MEMBER_UPDATE_ENDPOINT}/*`).as("updateMember");
+        .type(GYM_PROGRAM_NAME);
 
     submitUpdateModalAndEnsureSuccess();
 
-    cy.wait("@updateMember");
-
-    assertGymProgramsFieldExistInMemberList(false);
+    assertGymProgramsFieldExistInMemberList(true, GYM_PROGRAM_NAME);
   });
 
   it("ManageMembers - Inputting and submitting with valid member name, admin number and gym programs should work", () =>
@@ -236,7 +249,7 @@ describe("AcroChief", () =>
         .should("have.text", "No members found!");
   });
 
-  it(`ManageMembers - Should there be 0 registered members, there should be a "No members found!" message displayed`, () =>
+  it(`ManageMembers - Should there be no registered members, there should be a "No members found!" message displayed`, () =>
   {
     cy.intercept("GET", `${Endpoints.MEMBER_GET_ENDPOINT}`,
     {

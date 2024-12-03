@@ -120,9 +120,9 @@ export class ElementCollection
         return cy.get(`#${ElementCollection.MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID}`);
     }
 
-    static getFirstGymProgramsTitleElementCypress()
+    static getGymProgramsTitleElementCypressFilter()
     {
-        return cy.get(`.${ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME}`).first();
+        return cy.get(`.${ElementCollection.GYM_PROGRAMS_FIELD_TITLE_MEMBER_LIST_CLASS_NAME}`);
     }
 
     static getMemberListErrorHeadingCypress()
