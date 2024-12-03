@@ -22,7 +22,7 @@ describe("AcroChief", () =>
 
   const showModal = () =>
   {
-    assertModalVisible(true, () =>
+    assertModalTransitionToVisible(true, () =>
     {
       // Get first button with "Edit" as its text
       cy.get("button").contains("Edit").click();
@@ -38,16 +38,33 @@ describe("AcroChief", () =>
         .click();
   }
 
-  /**
-   * @param { boolean } isVisible
-   * @param { function() } transitionAction
-   */
-  const assertModalVisible = (isVisible, transitionAction) =>
+  const assertModalVisible = (isVisible, action) =>
   {
     const getChainer = (isVisible) => isVisible ? "be.visible" : "not.be.visible";
 
     ElementCollection
+        // Timeout 0 because we want to see its immediate value
+        .getMemberUpdateModalCypress(0)
+        .should(getChainer(isVisible));
+
+    action();
+
+    ElementCollection
         .getMemberUpdateModalCypress()
+        .should(getChainer(isVisible));
+  }
+
+  /**
+   * @param { boolean } isVisible
+   * @param { function() } transitionAction
+   */
+  const assertModalTransitionToVisible = (isVisible, transitionAction) =>
+  {
+    const getChainer = (isVisible) => isVisible ? "be.visible" : "not.be.visible";
+
+    ElementCollection
+        // Timeout 0 because we want to see its immediate value
+        .getMemberUpdateModalCypress(0)
         .should(getChainer(!isVisible));
 
     transitionAction();
@@ -62,7 +79,7 @@ describe("AcroChief", () =>
     // Wait for request to complete, since UI will be updated by then
     cy.intercept("PUT", `${Endpoints.MEMBER_UPDATE_ENDPOINT}/*`).as("updateMember");
 
-    assertModalVisible(false, submitUpdateModal);
+    assertModalTransitionToVisible(false, submitUpdateModal);
 
     cy.wait("@updateMember");
   }
@@ -100,19 +117,11 @@ describe("AcroChief", () =>
         baseUrl = url;
       };
 
-      setBaseURLPromise();
+      runTestAsync(setBaseURLPromise);
     });
 
     // Reset the database so that we have a known set of members and gym programs
     cy.request("PUT", Endpoints.DATABASE_RESET_ENDPOINT);
-  });
-
-  it("Resolve base URL promise", () =>
-  {
-    runTestAsync(async () =>
-    {
-      await setBaseURLPromise;
-    });
   });
 
   it("ManageMembers - Clicking on \"Edit\" button in the member list should cause edit member modal to pop-up.", () =>
@@ -219,6 +228,27 @@ describe("AcroChief", () =>
         .clear();
 
     submitUpdateModalAndEnsureSuccess();
+  });
+
+  it("ManageMembers - Inputting and submitting non-alpha or space characters for member name will result in a form error", () =>
+  {
+    visitPage();
+
+    showModal();
+
+    const UPDATED_NAME = "Updated Name 2";
+
+    ElementCollection
+        .getMemberUpdateModalNameFieldCypress()
+        .clear()
+        .type(UPDATED_NAME)
+        .should('have.value', UPDATED_NAME);
+
+    assertModalVisible(true, submitUpdateModal);
+
+    ElementCollection
+        .getMemberUpdateModalMessageCypress()
+        .should("have.text", "[ name ] Name must only contain letters!");
   });
 
   it("ManageMembers - Invalid response on GET should result in error message being displayed in place of member list", () =>

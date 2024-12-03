@@ -134,6 +134,7 @@ updateMemberModal.nameInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_NA
 updateMemberModal.adminNumberInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_ADMIN_NUMBER_FIELD_ID;
 updateMemberModal.gymProgramsInputElement.id = ElementCollection.MEMBER_UDPATE_MODAL_GYM_PROGRAMS_FIELD_ID;
 updateMemberModal.actionButtonElement.id = ElementCollection.MEMBER_UDPATE_MODAL_SUBMIT_BUTTON_ID;
+updateMemberModal.modalMessageElement.id = ElementCollection.MEMBER_UDPATE_MODAL_MESSAGE_ID;
 
 const onLoadAsync = async () =>
 {
