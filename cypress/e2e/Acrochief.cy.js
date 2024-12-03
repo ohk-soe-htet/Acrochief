@@ -140,8 +140,8 @@ describe("AcroChief", () =>
   });
 
   it(`ManageMembers - 
-  Inputting and submitting with blank gym programs should result in the gym program field being removed 
-  from the particular member in the member list`, () =>
+  Inputting and submitting with blank gym program field should result in the gym program field being removed 
+  for the particular member in the member list`, () =>
   {
     visitPage();
 
@@ -158,8 +158,8 @@ describe("AcroChief", () =>
 
 
   it(`ManageMembers - 
-  Inputting and submitting with blank gym programs should result in the gym program field being removed 
-  from the particular member in the member list`, () =>
+  Inputting and submitting with filled in gym program field should result in the gym program field being displayed
+  for the particular member in the member list`, () =>
   {
     visitPage();
 
