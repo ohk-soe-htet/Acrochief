@@ -7,7 +7,9 @@ import { app, server } from "../index.mjs";
 chai.use(chaiHttp);
 let baseUrl;
 
-describe("Gym Program Update API", () => {
+describe("Gym Program Update API", function () {
+	this.timeout(5000);
+
 	before(async () => {
 		const { address, port } = await server.address();
 		baseUrl = `http://${address === "::" ? "localhost" : address}:${port}`;
@@ -23,7 +25,7 @@ describe("Gym Program Update API", () => {
 
 	it("should update a program successfully", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
@@ -38,14 +40,14 @@ describe("Gym Program Update API", () => {
 				expect(res.body.message).to.equal(
 					"Program updated successfully!"
 				);
-				expect(res.body.program.name).to.equal("updated program");
+				expect(res.body.program.name).to.equal("Updated Program");
 				done();
 			});
 	});
 
 	it("should return 400 for missing name", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				focusBodyPart: "upper",
 				intensity: "mild",
@@ -65,7 +67,7 @@ describe("Gym Program Update API", () => {
 
 	it("should return 400 for invalid focus body part", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "invalid",
@@ -86,7 +88,7 @@ describe("Gym Program Update API", () => {
 
 	it("should return 400 for invalid intensity", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
@@ -107,7 +109,7 @@ describe("Gym Program Update API", () => {
 
 	it("should return 400 for invalid difficulty", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
@@ -128,7 +130,7 @@ describe("Gym Program Update API", () => {
 
 	it("should return 400 for invalid target audience", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
@@ -149,7 +151,7 @@ describe("Gym Program Update API", () => {
 
 	it("should return 400 for invalid reps", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/1")
+			.put("/api/gym-programs/update/1")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
@@ -166,9 +168,93 @@ describe("Gym Program Update API", () => {
 			});
 	});
 
-	it("should return 400 for non-existent program ID", (done) => {
+	it("should return 400 for invalid difficulty and intensity combination", (done) => {
 		chai.request(baseUrl)
-			.put("/api/programs/nonexistent")
+			.put("/api/gym-programs/update/1")
+			.send({
+				name: "Updated Program",
+				focusBodyPart: "upper",
+				intensity: "high",
+				difficulty: "beginner",
+				targetAudience: "adults",
+				reps: 8,
+				isActive: true,
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(400);
+				expect(res.body.errors).to.include(
+					"Beginner programs cannot have 'high' intensity."
+				);
+				done();
+			});
+	});
+
+	it("should return 400 for invalid reps for beginner programs", (done) => {
+		chai.request(baseUrl)
+			.put("/api/gym-programs/update/1")
+			.send({
+				name: "Updated Program",
+				focusBodyPart: "upper",
+				intensity: "mild",
+				difficulty: "beginner",
+				targetAudience: "adults",
+				reps: 15,
+				isActive: true,
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(400);
+				expect(res.body.errors).to.include(
+					"Beginner programs should have fewer than 10 reps."
+				);
+				done();
+			});
+	});
+
+	it("should return 400 for invalid reps for intermediate programs with high intensity", (done) => {
+		chai.request(baseUrl)
+			.put("/api/gym-programs/update/1")
+			.send({
+				name: "Updated Program",
+				focusBodyPart: "upper",
+				intensity: "high",
+				difficulty: "intermediate",
+				targetAudience: "adults",
+				reps: 25,
+				isActive: true,
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(400);
+				expect(res.body.errors).to.include(
+					"Intermediate programs should not exceed 20 reps with high intensity."
+				);
+				done();
+			});
+	});
+
+	it("should return 400 for invalid reps for advanced programs with high intensity", (done) => {
+		chai.request(baseUrl)
+			.put("/api/gym-programs/update/1")
+			.send({
+				name: "Updated Program",
+				focusBodyPart: "upper",
+				intensity: "mild",
+				difficulty: "advanced",
+				targetAudience: "adults",
+				reps: 10,
+				isActive: true,
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(400);
+				expect(res.body.errors).to.include(
+					"Advanced programs must have 'high' intensity."
+				);
+				done();
+			});
+	});
+
+	it("should retur 400 for non-existing program", (done) => {
+		chai.request(baseUrl)
+			.put("/api/gym-programs/update/100")
 			.send({
 				name: "Updated Program",
 				focusBodyPart: "upper",
