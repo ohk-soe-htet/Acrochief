@@ -1,7 +1,6 @@
 import { DB_INSTANCE } from "../database/JSONDatabase.mjs";
 import { GymProgramDTO } from "../../common/dtos/GymProgramDTO.mjs";
 
-// Ohk
 export const updateProgram = async (req, res) => {
 	const programId = req.params.id;
 	const programData = req.body;
@@ -20,8 +19,7 @@ export const updateProgram = async (req, res) => {
 	isActive = isActive ?? true;
 
 	// Change to lower case
-	[name, focusBodyPart, intensity, difficulty, targetAudience] = [
-		name,
+	[focusBodyPart, intensity, difficulty, targetAudience] = [
 		focusBodyPart,
 		intensity,
 		difficulty,

@@ -2,7 +2,6 @@ import { closeModal, displayPrograms } from "./CreateGymProgram.mjs";
 import { Endpoints } from "./Endpoints.mjs";
 import { constructPUT } from "./helpers/RequestHelpers.mjs";
 import { GymProgramDTO } from "../../common/dtos/GymProgramDTO.mjs";
-import { plainToClass } from "class-transformer";
 
 const updateModal = document.getElementById("updateProgramModal");
 
@@ -23,7 +22,6 @@ const loadProgramData = async (programId) => {
 
 		const updateProgramForm = document.getElementById("updateProgramForm");
 		updateProgramForm.attributes["data-id"] = programId;
-
 
 		const program = await response.json();
 		document.getElementById("updateName").value = program.name;
@@ -70,7 +68,9 @@ const submitUpdateForm = async (event) => {
 		);
 
 		if (response.ok) {
-			alert(`Program: [${updatedProgram.name}] has been updated successfully!`);
+			alert(
+				`Program: [${updatedProgram.name}] has been updated successfully!`
+			);
 			event.target.reset();
 			closeModal(document.getElementById("updateProgramModal"));
 			await displayPrograms();
