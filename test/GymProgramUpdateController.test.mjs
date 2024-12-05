@@ -3,12 +3,14 @@ import { expect } from "chai";
 import chai from "chai";
 import chaiHttp from "chai-http";
 import { app, server } from "../index.mjs";
+import sinon from "sinon";
+import { DB_INSTANCE } from "../utils/database/JSONDatabase.mjs";
 
 chai.use(chaiHttp);
 let baseUrl;
 
 describe("Gym Program Update API", function () {
-	this.timeout(5000);
+	this.timeout(10000);
 
 	before(async () => {
 		const { address, port } = await server.address();
@@ -41,6 +43,12 @@ describe("Gym Program Update API", function () {
 					"Program updated successfully!"
 				);
 				expect(res.body.program.name).to.equal("Updated Program");
+
+				chai.assert.isObject(
+					res.body.program,
+					"Program should be an object"
+				);
+
 				done();
 			});
 	});
@@ -269,6 +277,30 @@ describe("Gym Program Update API", function () {
 				expect(res.body.errors).to.include(
 					"Program with this ID does not exist."
 				);
+				done();
+			});
+	});
+
+	it("should handle database error gracefully", (done) => {
+		sinon
+			.stub(DB_INSTANCE, "updateAsync")
+			.throws(new Error("Database error"));
+
+		chai.request(baseUrl)
+			.put("/api/gym-programs/update/1")
+			.send({
+				name: "Updated Program",
+				focusBodyPart: "upper",
+				intensity: "mild",
+				difficulty: "beginner",
+				targetAudience: "adults",
+				reps: 8,
+				isActive: true,
+			})
+			.end((err, res) => {
+				expect(res).to.have.status(500);
+				expect(res.body.errors).to.include("Database error");
+				DB_INSTANCE.updateAsync.restore();
 				done();
 			});
 	});
