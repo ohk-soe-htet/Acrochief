@@ -27,6 +27,7 @@ export async function displayPrograms() {
 		programArray.map((program) => {
 			const colDiv = document.createElement("div");
 			colDiv.className = "col-md-4 mb-4";
+			colDiv.id = program.id;
 
 			const cardDiv = document.createElement("div");
 			cardDiv.className = "card h-100";
@@ -34,7 +35,7 @@ export async function displayPrograms() {
 			const cardBodyDiv = document.createElement("div");
 			cardBodyDiv.className = "card-body";
 
-			let programName = program.name.toUpperCase();
+			let programName = program.name;
 			cardBodyDiv.innerHTML = `
                 <h5 class="card-title">${programName}</h5>
                 <p class="card-text">Focus: ${program.focusBodyPart}</p>
