@@ -10,25 +10,6 @@ describe("Update Program Frontend", () => {
 		return cy.task("stopServer"); // Stop the server after the report is done
 	});
 
-	// it("should show an error if response is not ok when loading program data", () => {
-	// 	cy.visit(`${baseUrl}/pages/ManageGymPrograms.html`);
-
-	// 	cy.intercept("GET", "/api/gym-programs/13").as("getInvalidProgram");
-	// 	cy.window().then((win) => {
-	// 		cy.spy(win.console, "error").as("consoleError");
-	// 	});
-
-	// 	// Open the update modal for the program with ID '1'
-	// 	cy.get("button[data-id='1']").click();
-
-	// 	cy.wait("@getInvalidProgram");
-
-	// 	cy.get("@consoleError").should(
-	// 		"be.calledWith",
-	// 		/Failed to fetch program data./
-	// 	);
-	// });
-
 	it("should show an error when failed to connect to the server", () => {
 		cy.visit(`${baseUrl}/pages/ManageGymPrograms.html`);
 

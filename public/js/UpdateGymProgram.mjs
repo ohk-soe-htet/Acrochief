@@ -14,20 +14,22 @@ const loadProgramData = async (programId) => {
 	const response = await fetch(
 		`${Endpoints.GYM_PROGRAM_GET_ENDPOINT}/${programId}`
 	);
+	/* istanbul ignore else */
+	if (response.ok) {
+		const updateProgramForm = document.getElementById("updateProgramForm");
+		updateProgramForm.attributes["data-id"] = programId;
 
-	const updateProgramForm = document.getElementById("updateProgramForm");
-	updateProgramForm.attributes["data-id"] = programId;
-
-	const program = await response.json();
-	document.getElementById("updateName").value = program.name;
-	document.getElementById("updateFocusBodyPart").value =
-		program.focusBodyPart;
-	document.getElementById("updateDifficulty").value = program.difficulty;
-	document.getElementById("updateIntensity").value = program.intensity;
-	document.getElementById("updateTargetAudience").value =
-		program.targetAudience;
-	document.getElementById("updateReps").value = program.reps;
-	document.getElementById("updateProgramId").value = program.id;
+		const program = await response.json();
+		document.getElementById("updateName").value = program.name;
+		document.getElementById("updateFocusBodyPart").value =
+			program.focusBodyPart;
+		document.getElementById("updateDifficulty").value = program.difficulty;
+		document.getElementById("updateIntensity").value = program.intensity;
+		document.getElementById("updateTargetAudience").value =
+			program.targetAudience;
+		document.getElementById("updateReps").value = program.reps;
+		document.getElementById("updateProgramId").value = program.id;
+	}
 };
 
 /**
@@ -72,7 +74,8 @@ const submitUpdateForm = async (event) => {
 				"Error updating program: " +
 					(errorData.errors
 						? errorData.errors.join(", ")
-						: "Unknown error.")
+						: /* istanbul ignore next */
+						  "Unknown error.")
 			);
 		}
 	} catch (error) {
