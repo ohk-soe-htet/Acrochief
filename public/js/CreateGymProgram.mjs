@@ -10,7 +10,7 @@ export function closeModal(modal) {
 
 export async function displayPrograms() {
 	try {
-		const response = await fetch("/api/gym-programs");
+		const response = await fetch("http://localhost:5050/api/gym-programs");
 		if (!response.ok) {
 			alert("Failed to fetch programs.");
 			return;
@@ -77,11 +77,14 @@ async function submitForm(event) {
 	formData.id = crypto.randomUUID(); // Generate a unique ID for the new program
 
 	try {
-		const response = await fetch("/api/gym-programs/create", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(formData),
-		});
+		const response = await fetch(
+			"http://localhost:5050/api/gym-programs/create",
+			{
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formData),
+			}
+		);
 
 		if (response.ok) {
 			alert(`Program: [${formData.name}] has been created successfully!`);
