@@ -18,7 +18,7 @@ describe("Gym Program Update API", function () {
 
 		// Add a real program to the database
 		await DB_INSTANCE.tryCreateGymProgram({
-			id: 1,
+			id: "1",
 			name: "Initial Program",
 			focusBodyPart: "upper",
 			intensity: "mild",
