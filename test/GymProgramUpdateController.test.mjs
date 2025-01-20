@@ -15,6 +15,18 @@ describe("Gym Program Update API", function () {
 	before(async () => {
 		const { address, port } = await server.address();
 		baseUrl = `http://${address === "::" ? "localhost" : address}:${port}`;
+
+		// Add a real program to the database
+		await DB_INSTANCE.tryCreateGymProgram({
+			id: 1,
+			name: "Initial Program",
+			focusBodyPart: "upper",
+			intensity: "mild",
+			difficulty: "beginner",
+			targetAudience: "adults",
+			reps: 8,
+			isActive: true,
+		});
 	});
 
 	after(() => {
