@@ -6,9 +6,6 @@ node_modules/
 # Ignore appsettings.json
 appsettings.json
 
-# Ignore .idea
-.idea/
-
 # Ignore JSON database
 database.json
 
@@ -19,3 +16,7 @@ database.json
 coverage/
 instrumented/
 .nyc_output/
+
+error.log
+combined.log
+.env

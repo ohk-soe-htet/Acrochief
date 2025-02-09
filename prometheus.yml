@@ -1,0 +1,5 @@
+scrape_configs:
+    # ...existing scrape configs...
+    - job_name: "express_app"
+      static_configs:
+          - targets: ["localhost:5050"]
